@@ -35,8 +35,6 @@ export async function topSourceIps(filters: EventFilters, limit: number): Promis
     LIMIT ${limit}
   `;
 
-  console.log({rows});
-
   // Nest the flat severity columns into bySeverity — a rename, not aggregation.
   const rowsMapped = rows.map((r) => ({
     sourceIp: r.sourceIp,
@@ -44,6 +42,5 @@ export async function topSourceIps(filters: EventFilters, limit: number): Promis
     bySeverity: { info: r.info, warning: r.warning, critical: r.critical },
   }));
 
-  console.log({rowsMapped});
   return rowsMapped;
 }
