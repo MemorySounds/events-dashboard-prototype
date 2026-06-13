@@ -1,8 +1,7 @@
 import { prisma } from "../../db/client";
 import { buildWhere, type EventFilters } from "../../schemas";
 
-// Counts per algorithm, optionally split by severity. Typed groupBy reuses buildWhere.
-// Two branches (not a dynamic `by`) so each result shape is known to the compiler.
+// Two branches (not a dynamic `by`) so the compiler knows each result's shape.
 export async function byAlgorithm(filters: EventFilters, breakdownBySeverity: boolean) {
   const where = buildWhere(filters);
 

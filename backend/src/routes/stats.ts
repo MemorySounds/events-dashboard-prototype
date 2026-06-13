@@ -25,13 +25,13 @@ const MAX_TOP = 50;
 // Every stats endpoint is filter-aware via the shared schema + from/to check.
 const FilterSchema = eventFilterSchema.refine(fromBeforeTo, fromBeforeToError);
 
-// GET /stats/events-per-day — event volume bucketed by day.
+// GET /stats/events-per-day — event volume per day (the dashboard trend line).
 router.get("/events-per-day", async (req, res) => {
   const filters = FilterSchema.parse(req.query);
   res.json({ data: await eventsPerDay(filters) });
 });
 
-// GET /stats/by-algorithm — counts per algorithm, optional severity breakdown.
+// GET /stats/by-algorithm — event counts per algorithm, optionally split by severity.
 router.get("/by-algorithm", async (req, res) => {
   const { breakdownBySeverity, ...filters } = eventFilterSchema
     .extend({ breakdownBySeverity: boolParam })
@@ -40,14 +40,13 @@ router.get("/by-algorithm", async (req, res) => {
   res.json({ data: await byAlgorithm(filters, breakdownBySeverity) });
 });
 
-// GET /stats/inventory-keys — counts per algorithm × asset type, filtered by
-// asset type, severity, year, and an algorithm list (the brief's multi-filter query).
+// GET /stats/inventory-keys — unique keys per algorithm × asset type (the crypto inventory).
 router.get("/inventory-keys", async (req, res) => {
   const filters = inventoryFilterSchema.parse(req.query);
   res.json({ data: await inventoryKeys(filters) });
 });
 
-// GET /stats/top-source-ips — busiest IPs with a per-severity breakdown.
+// GET /stats/top-source-ips — busiest source IPs, each with a severity breakdown.
 router.get("/top-source-ips", async (req, res) => {
   const { limit, ...filters } = eventFilterSchema
     .extend({ limit: z.coerce.number().int().min(1).max(MAX_TOP).default(DEFAULT_TOP) })

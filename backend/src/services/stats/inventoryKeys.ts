@@ -2,8 +2,7 @@ import { prisma } from "../../db/client";
 import { Prisma } from "../../generated/prisma/client";
 import type { InventoryFilters } from "../../schemas";
 
-// Raw-SQL WHERE for inventory-keys' bespoke filter set: equality on assetType/severity,
-// IN on the algorithm list, and a year expanded to a [Jan 1, next Jan 1) UTC range.
+// Parameterized WHERE for the bespoke filters; year expands to a [Jan 1, next Jan 1) UTC range.
 function buildInventoryWhereSql(f: InventoryFilters): Prisma.Sql {
   const conditions: Prisma.Sql[] = [];
   if (f.assetType) conditions.push(Prisma.sql`"assetType" = ${f.assetType}`);
@@ -25,10 +24,8 @@ export interface InventoryRow {
   count: number;
 }
 
-// Key inventory: counts of UNIQUE assets per algorithm × asset type, with the bespoke
-// filter set (asset type, severity, year, algorithm list). Uses COUNT(DISTINCT "assetId")
-// so an asset that fired many events is counted once — needs $queryRaw, since Prisma's
-// groupBy._count can't express a DISTINCT on a different column.
+// COUNT(DISTINCT "assetId") → unique assets, not events (one asset emits many events).
+// Needs $queryRaw: groupBy._count can't do DISTINCT on another column.
 export function inventoryKeys(filters: InventoryFilters): Promise<InventoryRow[]> {
   return prisma.$queryRaw<InventoryRow[]>`
     SELECT "algorithm", "assetType", COUNT(DISTINCT "assetId")::int AS count
