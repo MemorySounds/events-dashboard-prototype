@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { prisma } from "./db/client";
 import { errorHandler } from "./middleware/errorHandler";
+import eventsRouter from "./routes/events";
 
 const app = express();
 
@@ -13,6 +14,8 @@ app.get("/health", async (_req, res) => {
   await prisma.$queryRaw`SELECT 1`;
   res.json({ status: "ok" });
 });
+
+app.use("/events", eventsRouter);
 
 app.use(errorHandler);
 
