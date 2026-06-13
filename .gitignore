@@ -1,0 +1,11 @@
+# Dependencies
+node_modules/
+
+# Build output (tsc → dist/)
+dist/
+
+# Environment & secrets
+.env
+
+# macOS
+.DS_Store
