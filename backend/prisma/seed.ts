@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "../generated/prisma/client";
+import { PrismaClient } from "../src/generated/prisma/client";
 
 // Prisma 7 requires a driver adapter; the runtime client reads its URL from here, not the schema.
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
