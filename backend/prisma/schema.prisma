@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  assetId     String
+  assetType   String   // certificate | ssh-key | api-key
+  algorithm   String   // RSA2048 | RSA1024 | ECDSA-P256 | Ed25519 | SHA1 | 3DES
+  severity    String   // info | warning | critical
+  sourceIp    String
+  observedAt  DateTime
+  eventType   String   // observed | rotation | expiration-warning | error
+
+  @@index([observedAt])
+  @@index([algorithm])
+  @@index([severity])
+  @@index([assetType])
+  @@index([sourceIp])
+  @@index([observedAt, severity])
+  @@map("events")
+}
+
