@@ -70,16 +70,3 @@ export const inventoryFilterSchema = eventFilterSchema
   });
 
 export type InventoryFilters = z.infer<typeof inventoryFilterSchema>;
-
-// Where-builder for inventory-keys: equality on assetType/severity, IN on the
-// algorithm list, and a year expanded to a [Jan 1, next Jan 1) UTC range.
-export function buildInventoryWhere(f: InventoryFilters) {
-  return {
-    ...(f.assetType ? { assetType: f.assetType } : {}),
-    ...(f.severity ? { severity: f.severity } : {}),
-    ...(f.algorithms?.length ? { algorithm: { in: f.algorithms } } : {}),
-    ...(f.year
-      ? { observedAt: { gte: new Date(Date.UTC(f.year, 0, 1)), lt: new Date(Date.UTC(f.year + 1, 0, 1)) } }
-      : {}),
-  };
-}
