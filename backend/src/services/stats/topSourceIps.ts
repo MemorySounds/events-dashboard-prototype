@@ -1,5 +1,6 @@
 import { prisma } from "../../db/client";
-import { buildWhere, type EventFilters } from "../../schemas";
+import type { EventFilters } from "../../schemas";
+import { buildWhereSql } from "./sql";
 
 type Severity = "info" | "warning" | "critical";
 
@@ -9,28 +10,40 @@ export interface TopIp {
   bySeverity: Record<Severity, number>;
 }
 
-// Busiest source IPs with a per-severity breakdown. Group by (ip, severity), then
-// fold into one record per IP. Top-N is applied in JS after folding — fine at this
-// scale; at high volume this would be a top-N subquery joined to the breakdown.
+interface Row {
+  sourceIp: string;
+  total: number;
+  info: number;
+  warning: number;
+  critical: number;
+}
+
+// Busiest source IPs with a per-severity breakdown. The database does all the work:
+// COUNT(*) FILTER pivots each severity into its own column, and ORDER BY + LIMIT applies
+// the top-N — so only `limit` rows come back. JS only nests the columns into bySeverity.
 export async function topSourceIps(filters: EventFilters, limit: number): Promise<TopIp[]> {
-  const where = buildWhere(filters);
-  const rows = await prisma.event.groupBy({
-    by: ["sourceIp", "severity"],
-    where,
-    _count: { _all: true },
-  });
+  const rows = await prisma.$queryRaw<Row[]>`
+    SELECT "sourceIp",
+           COUNT(*)::int AS total,
+           (COUNT(*) FILTER (WHERE "severity" = 'info'))::int     AS info,
+           (COUNT(*) FILTER (WHERE "severity" = 'warning'))::int  AS warning,
+           (COUNT(*) FILTER (WHERE "severity" = 'critical'))::int AS critical
+    FROM events
+    ${buildWhereSql(filters)}
+    GROUP BY "sourceIp"
+    ORDER BY total DESC, "sourceIp" ASC
+    LIMIT ${limit}
+  `;
 
-  const byIp = new Map<string, TopIp>();
-  for (const r of rows) {
-    let entry = byIp.get(r.sourceIp);
-    if (!entry) {
-      entry = { sourceIp: r.sourceIp, total: 0, bySeverity: { info: 0, warning: 0, critical: 0 } };
-      byIp.set(r.sourceIp, entry);
-    }
-    const n = r._count._all;
-    entry.total += n;
-    entry.bySeverity[r.severity as Severity] = n;
-  }
+  console.log({rows});
 
-  return [...byIp.values()].sort((a, b) => b.total - a.total).slice(0, limit);
+  // Nest the flat severity columns into bySeverity — a rename, not aggregation.
+  const rowsMapped = rows.map((r) => ({
+    sourceIp: r.sourceIp,
+    total: r.total,
+    bySeverity: { info: r.info, warning: r.warning, critical: r.critical },
+  }));
+
+  console.log({rowsMapped});
+  return rowsMapped;
 }
