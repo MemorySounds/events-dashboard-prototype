@@ -54,3 +54,32 @@ export function buildWhere(filters: EventFilters) {
     }),
   };
 }
+
+// inventory-keys takes a richer, bespoke filter set (per the brief): asset type and
+// severity (reused from above), an algorithm *list* (IN), and a calendar year.
+export const inventoryFilterSchema = eventFilterSchema
+  .pick({ assetType: true, severity: true })
+  .extend({
+    year: z.coerce.number().int().min(2000).max(2100).optional(),
+    // `?algorithms=RSA1024,SHA1,3DES` → validated array; each must be a known algorithm.
+    algorithms: z
+      .string()
+      .transform((s) => s.split(",").filter(Boolean))
+      .pipe(z.array(algorithmEnum))
+      .optional(),
+  });
+
+export type InventoryFilters = z.infer<typeof inventoryFilterSchema>;
+
+// Where-builder for inventory-keys: equality on assetType/severity, IN on the
+// algorithm list, and a year expanded to a [Jan 1, next Jan 1) UTC range.
+export function buildInventoryWhere(f: InventoryFilters) {
+  return {
+    ...(f.assetType ? { assetType: f.assetType } : {}),
+    ...(f.severity ? { severity: f.severity } : {}),
+    ...(f.algorithms?.length ? { algorithm: { in: f.algorithms } } : {}),
+    ...(f.year
+      ? { observedAt: { gte: new Date(Date.UTC(f.year, 0, 1)), lt: new Date(Date.UTC(f.year + 1, 0, 1)) } }
+      : {}),
+  };
+}

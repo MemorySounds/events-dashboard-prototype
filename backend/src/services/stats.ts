@@ -1,6 +1,11 @@
 import { prisma } from "../db/client";
 import { Prisma } from "../generated/prisma/client";
-import { buildWhere, type EventFilters } from "../schemas";
+import {
+  buildWhere,
+  buildInventoryWhere,
+  type EventFilters,
+  type InventoryFilters,
+} from "../schemas";
 
 type Severity = "info" | "warning" | "critical";
 
@@ -64,9 +69,10 @@ export async function byAlgorithm(filters: EventFilters, breakdownBySeverity: bo
   return rows.map((r) => ({ algorithm: r.algorithm, count: r._count._all }));
 }
 
-// Key inventory: counts per algorithm × asset type.
-export async function inventoryKeys(filters: EventFilters) {
-  const where = buildWhere(filters);
+// Key inventory: counts per algorithm × asset type, with the bespoke filter set
+// (asset type, severity, year, algorithm list).
+export async function inventoryKeys(filters: InventoryFilters) {
+  const where = buildInventoryWhere(filters);
   const rows = await prisma.event.groupBy({
     by: ["algorithm", "assetType"],
     where,

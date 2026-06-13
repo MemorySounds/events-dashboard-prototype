@@ -1,6 +1,11 @@
 import { Router } from "express";
 import { z } from "zod";
-import { eventFilterSchema, fromBeforeTo, fromBeforeToError } from "../schemas";
+import {
+  eventFilterSchema,
+  inventoryFilterSchema,
+  fromBeforeTo,
+  fromBeforeToError,
+} from "../schemas";
 import {
   eventsPerDay,
   byAlgorithm,
@@ -35,9 +40,10 @@ router.get("/by-algorithm", async (req, res) => {
   res.json({ data: await byAlgorithm(filters, breakdownBySeverity) });
 });
 
-// GET /stats/inventory-keys — counts per algorithm × asset type.
+// GET /stats/inventory-keys — counts per algorithm × asset type, filtered by
+// asset type, severity, year, and an algorithm list (the brief's multi-filter query).
 router.get("/inventory-keys", async (req, res) => {
-  const filters = FilterSchema.parse(req.query);
+  const filters = inventoryFilterSchema.parse(req.query);
   res.json({ data: await inventoryKeys(filters) });
 });
 
