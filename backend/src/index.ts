@@ -4,6 +4,7 @@ import cors from "cors";
 import { prisma } from "./db/client";
 import { errorHandler } from "./middleware/errorHandler";
 import eventsRouter from "./routes/events";
+import statsRouter from "./routes/stats";
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.get("/health", async (_req, res) => {
 });
 
 app.use("/events", eventsRouter);
+app.use("/stats", statsRouter);
 
 app.use(errorHandler);
 
