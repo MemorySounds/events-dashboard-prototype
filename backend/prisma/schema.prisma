@@ -17,12 +17,12 @@ model Event {
   observedAt  DateTime
   eventType   String   // observed | rotation | expiration-warning | error
 
+  // The only schema-level index: backs the date-range filter, ORDER BY observedAt
+  // DESC, and day grouping. Common algorithms are dense enough to ride this index
+  // directly; selective algorithm filters only ever target the *deprecated*
+  // algorithms, covered by a partial index added via raw SQL in the migration
+  // (Prisma can't express partial indexes).
   @@index([observedAt])
-  @@index([algorithm])
-  @@index([severity])
-  @@index([assetType])
-  @@index([sourceIp])
-  @@index([observedAt, severity])
   @@map("events")
 }
 
