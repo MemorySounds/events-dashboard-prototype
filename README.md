@@ -5,6 +5,12 @@ An analytics dashboard over a stream of cryptographic-asset telemetry events
 including weak/deprecated algorithms — and source-IP activity, with shared,
 filterable views.
 
+## Screenshots
+
+| Dashboard | Events | Top IPs |
+|:---:|:---:|:---:|
+| ![Dashboard — events-per-day and events-by-algorithm charts](images/dashboard.png) | ![Events — paginated table with search, sort, and filters](images/events.png) | ![Top IPs — ranked source IPs with severity breakdown](images/topIps.png) |
+
 ## Tech Stack
 
 | Layer    | Choice                                                                 |
