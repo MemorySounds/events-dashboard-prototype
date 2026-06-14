@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -31,7 +32,11 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-gray-50 text-gray-900">
         <Providers>
-          <NavBar />
+          {/* NavBar reads useSearchParams (to carry filters across tabs), so it
+              needs a Suspense boundary to satisfy the production build. */}
+          <Suspense fallback={<div className="h-[57px] border-b border-gray-200 bg-white" />}>
+            <NavBar />
+          </Suspense>
           {children}
         </Providers>
       </body>

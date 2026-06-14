@@ -2,9 +2,14 @@
 
 // Top navigation across the three views, with the active link highlighted
 // (needs usePathname, hence a client component).
+//
+// Links carry the current query string forward so the global filters persist
+// when switching tabs — the filters are "global", so a critical-severity view
+// stays critical across pages. (Only global filters live in the URL; per-page
+// state like table search/sort/page is local, so nothing else leaks across.)
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 const LINKS = [
   { href: "/", label: "Dashboard" },
@@ -14,6 +19,8 @@ const LINKS = [
 
 export function NavBar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const query = searchParams.toString();
 
   return (
     <header className="border-b border-gray-200 bg-white">
@@ -26,7 +33,7 @@ export function NavBar() {
           return (
             <Link
               key={href}
-              href={href}
+              href={query ? `${href}?${query}` : href}
               className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                 active
                   ? "bg-indigo-50 text-indigo-700"
