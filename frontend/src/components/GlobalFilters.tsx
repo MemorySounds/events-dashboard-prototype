@@ -38,11 +38,13 @@ export function GlobalFilters() {
         From
         <input
           type="date"
-          value={filters.from ?? ""}
-          onChange={(e) => setFilter("from", e.target.value || undefined)}
-          // Open the native calendar on click anywhere (not just the icon),
-          // while still allowing manual typing. showPicker is modern-browser only.
-          onClick={(e) => e.currentTarget.showPicker?.()}
+          // Uncontrolled + commit on blur. A *controlled* date input re-renders on
+          // every keystroke, overwriting the value mid-typing and collapsing the
+          // year (e.g. typing "2026" lands as "0026"). `key` lets an external reset
+          // (Clear filters) remount the field with the new value.
+          key={filters.from ?? "from-empty"}
+          defaultValue={filters.from ?? ""}
+          onBlur={(e) => setFilter("from", e.target.value || undefined)}
           className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 focus:border-navy focus:outline-none"
         />
       </label>
@@ -50,9 +52,9 @@ export function GlobalFilters() {
         To
         <input
           type="date"
-          value={filters.to ?? ""}
-          onChange={(e) => setFilter("to", e.target.value || undefined)}
-          onClick={(e) => e.currentTarget.showPicker?.()}
+          key={filters.to ?? "to-empty"}
+          defaultValue={filters.to ?? ""}
+          onBlur={(e) => setFilter("to", e.target.value || undefined)}
           className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 focus:border-navy focus:outline-none"
         />
       </label>
