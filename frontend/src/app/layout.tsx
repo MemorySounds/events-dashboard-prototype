@@ -34,7 +34,7 @@ export default function RootLayout({
         <Providers>
           {/* NavBar reads useSearchParams (to carry filters across tabs), so it
               needs a Suspense boundary to satisfy the production build. */}
-          <Suspense fallback={<div className="h-[57px] border-b border-gray-200 bg-white" />}>
+          <Suspense fallback={<div className="h-[57px] bg-navy" />}>
             <NavBar />
           </Suspense>
           {children}

@@ -23,7 +23,7 @@ export function Select({
     <label className="flex flex-col gap-1 text-xs font-medium text-gray-600">
       {label}
       <select
-        className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none"
+        className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 focus:border-navy focus:outline-none"
         value={value ?? ""}
         // Empty string → undefined, so the filter key is removed from the URL.
         onChange={(e) => onChange(e.target.value || undefined)}

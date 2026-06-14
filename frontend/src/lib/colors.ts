@@ -10,5 +10,5 @@ export const SEVERITY_COLORS: Record<Severity, string> = {
   critical: "#ef4444", // red-500
 };
 
-// A single accent colour for non-severity-split charts.
-export const ACCENT_COLOR = "#6366f1"; // indigo-500
+// A single accent colour for non-severity-split charts (brand data-viz blue).
+export const ACCENT_COLOR = "#1f3a5f"; // --color-brand-blue

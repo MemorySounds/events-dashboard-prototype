@@ -40,7 +40,10 @@ export function GlobalFilters() {
           type="date"
           value={filters.from ?? ""}
           onChange={(e) => setFilter("from", e.target.value || undefined)}
-          className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none"
+          // Open the native calendar on click anywhere (not just the icon),
+          // while still allowing manual typing. showPicker is modern-browser only.
+          onClick={(e) => e.currentTarget.showPicker?.()}
+          className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 focus:border-navy focus:outline-none"
         />
       </label>
       <label className="flex flex-col gap-1 text-xs font-medium text-gray-600">
@@ -49,7 +52,8 @@ export function GlobalFilters() {
           type="date"
           value={filters.to ?? ""}
           onChange={(e) => setFilter("to", e.target.value || undefined)}
-          className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none"
+          onClick={(e) => e.currentTarget.showPicker?.()}
+          className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 focus:border-navy focus:outline-none"
         />
       </label>
 

@@ -23,10 +23,12 @@ export function NavBar() {
   const query = searchParams.toString();
 
   return (
-    <header className="border-b border-gray-200 bg-white">
+    <header className="bg-navy">
       <nav className="mx-auto flex max-w-6xl items-center gap-1 px-4 py-3">
-        <span className="mr-4 text-sm font-semibold text-gray-900">
-          Crypto Events
+        <span className="mr-5 text-sm tracking-tight">
+          <span className="font-semibold text-white">CryptoNext</span>
+          <span className="text-accent">.</span>
+          <span className="font-normal text-gray-400">Events</span>
         </span>
         {LINKS.map(({ href, label }) => {
           const active = pathname === href;
@@ -36,8 +38,8 @@ export function NavBar() {
               href={query ? `${href}?${query}` : href}
               className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                 active
-                  ? "bg-indigo-50 text-indigo-700"
-                  : "text-gray-600 hover:bg-gray-50"
+                  ? "bg-accent text-white"
+                  : "text-gray-300 hover:bg-navy-light hover:text-white"
               }`}
             >
               {label}

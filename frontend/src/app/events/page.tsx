@@ -6,7 +6,7 @@ import { EventsView } from "@/components/EventsView";
 export default function EventsPage() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
-      <h1 className="mb-4 text-xl font-semibold text-gray-900">Events</h1>
+      <h1 className="mb-4 text-xl font-semibold text-navy">Events</h1>
       <Suspense fallback={<div className="text-sm text-gray-500">Loading…</div>}>
         <EventsView />
       </Suspense>

@@ -22,6 +22,7 @@ import type { GlobalFilters } from "@/lib/filters";
 import { ACCENT_COLOR, SEVERITY_COLORS } from "@/lib/colors";
 import { Card } from "../ui/Card";
 import { QueryState } from "../ui/QueryState";
+import { ChartTooltip } from "./ChartTooltip";
 
 // One chart row per algorithm. `count` is used for the single-bar view;
 // the severity keys (info/warning/critical) are used for the stacked view.
@@ -60,7 +61,7 @@ export function AlgorithmChart({ filters }: { filters: GlobalFilters }) {
         type="checkbox"
         checked={breakdown}
         onChange={(e) => setBreakdown(e.target.checked)}
-        className="accent-indigo-500"
+        className="accent-navy"
       />
       Split by severity
     </label>
@@ -80,7 +81,7 @@ export function AlgorithmChart({ filters }: { filters: GlobalFilters }) {
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="algorithm" tick={{ fontSize: 11 }} />
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
-              <Tooltip />
+              <Tooltip content={<ChartTooltip />} cursor={{ fill: "#1a2b3d0a" }} />
               {breakdown ? (
                 <>
                   <Legend />

@@ -26,7 +26,7 @@ export function TopIpsView() {
       <select
         value={limit}
         onChange={(e) => setLimit(Number(e.target.value))}
-        className="rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none"
+        className="rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:border-navy focus:outline-none"
       >
         {LIMIT_OPTIONS.map((n) => (
           <option key={n} value={n}>

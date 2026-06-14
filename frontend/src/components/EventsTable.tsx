@@ -103,7 +103,7 @@ export function EventsTable({ events }: { events: Event[] }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search events…"
-          className="w-64 rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none"
+          className="w-64 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-navy focus:outline-none"
         />
         <span className="text-xs text-gray-500">
           {sorted.length === 0

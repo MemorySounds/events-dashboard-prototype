@@ -1,26 +1,27 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* CryptoNext-inspired brand palette (light theme, navy structure + red accent). */
+  --color-navy: #1a2b3d; /* primary dark surface: nav, dark headings */
+  --color-navy-light: #22364d; /* hover state on navy surfaces */
+  --color-accent: #e63946; /* brand red: active / primary highlights */
+  --color-accent-dark: #cf2f3c; /* accent hover */
+  --color-brand-blue: #1f3a5f; /* data-viz series colour */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Deliberate, fixed light theme. The dashboard owns its colours, so we opt out
+   of the OS dark-mode preference — otherwise it flips backgrounds and, notably,
+   form-control text to near-white, making inputs and titles low-contrast. */
+:root {
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f8f9fa;
+  color: #1a1a1a;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    sans-serif;
 }
