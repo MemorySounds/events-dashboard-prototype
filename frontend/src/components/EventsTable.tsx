@@ -9,7 +9,7 @@
 // see all rows — not just one page — which is the correctness point behind the
 // "server-filter, client-paginate" decision.
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Event } from "@/lib/api";
 import { formatDateTime } from "@/lib/format";
 import { SeverityBadge } from "./ui/SeverityBadge";
@@ -76,9 +76,15 @@ export function EventsTable({ events }: { events: Event[] }) {
 
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
 
-  // Reset to page 1 whenever the underlying set changes (new server data or a
-  // new search), so the user never lands on a now-empty page.
-  useEffect(() => setPage(1), [search, events]);
+  // Reset to page 1 when the underlying set changes (new server data or a new
+  // search), so the user never lands on a now-empty page. Done during render —
+  // the React-recommended alternative to a setState-in-effect, which avoids an
+  // extra render pass (see react.dev "You Might Not Need an Effect").
+  const [resetOn, setResetOn] = useState({ search, events });
+  if (resetOn.search !== search || resetOn.events !== events) {
+    setResetOn({ search, events });
+    setPage(1);
+  }
 
   const safePage = Math.min(page, totalPages);
   const start = (safePage - 1) * PAGE_SIZE;
