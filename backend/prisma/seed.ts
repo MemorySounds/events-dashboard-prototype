@@ -4,21 +4,29 @@ import { join } from "node:path";
 import { z } from "zod";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
+import {
+  assetTypeEnum,
+  algorithmEnum,
+  severityEnum,
+  eventTypeEnum,
+} from "../src/schemas";
 
 // Prisma 7 requires a driver adapter; the runtime client reads its URL from here, not the schema.
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
-// Validate every line of the event stream on ingest — same enum constraints the API enforces.
+// Validate every line of the event stream on ingest, reusing the API's enum
+// definitions (single source of truth in src/schemas.ts) so the seed can never
+// drift from what the endpoints accept.
 const EventSchema = z.object({
   id: z.string(),
   assetId: z.string(),
-  assetType: z.enum(["certificate", "ssh-key", "api-key"]),
-  algorithm: z.enum(["RSA2048", "RSA1024", "ECDSA-P256", "Ed25519", "SHA1", "3DES"]),
-  severity: z.enum(["info", "warning", "critical"]),
+  assetType: assetTypeEnum,
+  algorithm: algorithmEnum,
+  severity: severityEnum,
   sourceIp: z.string(),
   observedAt: z.coerce.date(),
-  eventType: z.enum(["observed", "rotation", "expiration-warning", "error"]),
+  eventType: eventTypeEnum,
 });
 
 async function main() {
