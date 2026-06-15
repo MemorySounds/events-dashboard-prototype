@@ -73,12 +73,6 @@ export interface AlgorithmCount {
   count: number;
 }
 
-export interface InventoryRow {
-  algorithm: Algorithm;
-  assetType: AssetType;
-  count: number; // distinct assets, not events
-}
-
 export interface TopIp {
   sourceIp: string;
   total: number;
