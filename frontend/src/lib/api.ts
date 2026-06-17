@@ -117,15 +117,19 @@ export async function apiGet<T>(path: string, params: ApiQuery = {}): Promise<T>
   const res = await fetch(`${BASE_URL}${path}${toQueryString(params)}`);
 
   if (!res.ok) {
-    // The backend error middleware returns { error: ... }; fall back to status text.
-    let detail = res.statusText;
+    // The backend returns { error: { message, ... } }; surface that friendly
+    // message (or a plain-string error), falling back to the HTTP status text —
+    // never the raw error object.
+    let message = res.statusText;
     try {
       const body = await res.json();
-      if (body?.error) detail = typeof body.error === "string" ? body.error : JSON.stringify(body.error);
+      const err = body?.error;
+      if (typeof err === "string") message = err;
+      else if (typeof err?.message === "string") message = err.message;
     } catch {
       // non-JSON error body — keep statusText
     }
-    throw new ApiError(`GET ${path} failed (${res.status}): ${detail}`, res.status);
+    throw new ApiError(message, res.status);
   }
 
   return res.json() as Promise<T>;
