@@ -7,11 +7,15 @@
 import { ALGORITHMS, ASSET_TYPES, SEVERITIES } from "@/lib/api";
 import { useFilters } from "@/hooks/useFilters";
 import { Select } from "./ui/Select";
+import { DateField } from "./ui/DateField";
 
 export function GlobalFilters() {
   const { filters, setFilter, clearFilters } = useFilters();
 
   const hasActiveFilters = Object.keys(filters).length > 0;
+  // ISO date strings (YYYY-MM-DD) compare correctly as plain strings.
+  const invalidRange =
+    !!filters.from && !!filters.to && filters.from > filters.to;
 
   return (
     <div className="flex flex-wrap items-end gap-3 rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
@@ -34,30 +38,18 @@ export function GlobalFilters() {
         onChange={(v) => setFilter("severity", v)}
       />
 
-      <label className="flex flex-col gap-1 text-xs font-medium text-gray-600">
-        From
-        <input
-          type="date"
-          // Uncontrolled + commit on blur. A *controlled* date input re-renders on
-          // every keystroke, overwriting the value mid-typing and collapsing the
-          // year (e.g. typing "2026" lands as "0026"). `key` lets an external reset
-          // (Clear filters) remount the field with the new value.
-          key={filters.from ?? "from-empty"}
-          defaultValue={filters.from ?? ""}
-          onBlur={(e) => setFilter("from", e.target.value || undefined)}
-          className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 focus:border-navy focus:outline-none"
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-xs font-medium text-gray-600">
-        To
-        <input
-          type="date"
-          key={filters.to ?? "to-empty"}
-          defaultValue={filters.to ?? ""}
-          onBlur={(e) => setFilter("to", e.target.value || undefined)}
-          className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 focus:border-navy focus:outline-none"
-        />
-      </label>
+      <DateField
+        label="From"
+        value={filters.from}
+        max={filters.to}
+        onCommit={(v) => setFilter("from", v)}
+      />
+      <DateField
+        label="To"
+        value={filters.to}
+        min={filters.from}
+        onCommit={(v) => setFilter("to", v)}
+      />
 
       <button
         type="button"
@@ -67,6 +59,12 @@ export function GlobalFilters() {
       >
         Clear filters
       </button>
+
+      {invalidRange && (
+        <p className="w-full text-xs text-red-600">
+          The “From” date must be on or before the “To” date.
+        </p>
+      )}
     </div>
   );
 }
